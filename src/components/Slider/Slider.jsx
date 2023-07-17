@@ -2,10 +2,13 @@ import React, {useEffect, useState} from 'react'
 import './Slider.css'
 import axios from 'axios'
 import { MdKeyboardArrowRight, MdKeyboardArrowLeft } from 'react-icons/md'
+import Ratings from '../Ratings/Ratings'
+import Genres from '../Genres/Genres'
 
 function Slider({apiKey, baseUrl}) {
     const [upcomingMovies, setUpcomingMovies] = useState([])
     const [index, setIndex] = useState(0)
+    const [movieRating, setMovieRating] = useState([])
     const imageBaseUrl = 'https://image.tmdb.org/t/p/original'
 
     useEffect(()=>{
@@ -13,6 +16,8 @@ function Slider({apiKey, baseUrl}) {
         .then(res=>{
             console.log(res.data.results)
             setUpcomingMovies(res.data.results)
+            const ratings = res.data.results.map(movie => movie.vote_average/2)
+            setMovieRating(ratings)
         })
         .catch(err=>console.log(err))
     },[])
@@ -48,7 +53,9 @@ function Slider({apiKey, baseUrl}) {
         <div className='slider-info'>
             <h1>{upcomingMovies[index]?.title}</h1>
             <p className='slider-discription'>{upcomingMovies[index]?.overview.slice(0,130)}...</p>
+            <Genres movieGenres={upcomingMovies[index]?.genre_ids} baseUrl={baseUrl} apiKey={apiKey} />
             <p>Release Date: {upcomingMovies[index]?.release_date}</p>
+            <Ratings movieRating={movieRating[index]} />
         </div>
     </div>
   )
