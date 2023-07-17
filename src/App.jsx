@@ -13,7 +13,7 @@ function App() {
   return (
     <BrowserRouter>
     <ThemeContextProvider>
-    <Header />
+    <Header apiKey={apiKey} baseUrl={baseUrl} />
     <Routes>
       <Route path='/' element={<Homepage apiKey={apiKey} baseUrl={baseUrl} />} />
     </Routes>

@@ -1,11 +1,26 @@
-import React, {useContext} from 'react'
+import React, {useContext, useEffect, useState } from 'react'
 import { ThemeContext } from '../../context/ThemeContext'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import './Header.css'
 import { MdOutlineDarkMode, MdOutlineLightMode } from 'react-icons/md'
+import SearchResults from '../SearchResults/SearchResults'
+import axios from 'axios'
 
-function Header() {
+function Header({baseUrl, apiKey}) {
+    const navigate = useNavigate()
     const {darkMode, setDarkMode} = useContext(ThemeContext)
+    const [query, setQuery] = useState('')
+    const [searchResults, setSearchResults] = useState([])
+
+    useEffect(()=>{
+        if(query.trim().length > 0){
+            axios.get(`${baseUrl}/search/movie?api_key=${apiKey}&query=${query}`)
+            .then(res=>{
+                setSearchResults(res.data.results)
+            })
+            .catch(err=>console.log(err))
+        }
+    },[query])
 
     const handleTheme = () => {
         const newDarkMode = !darkMode
@@ -17,7 +32,19 @@ function Header() {
         <div className={darkMode?'header-container':'header-container header-light'}>
             <Link className='logo' to='/'>CineTrail</Link>
             <div className='search-container'>
-                <input type="text" className='search-input' placeholder='Search movies...' />
+                <input 
+                    value={query} 
+                    onChange={(e)=>setQuery(e.target.value)} 
+                    type="text" 
+                    className={`search-input ${query && 'input-active'} ${!query && darkMode && query}`} 
+                    placeholder='Search movies...' />
+                    {query.trim() !== '' &&(
+                        <div className='search-results-container'>
+                        {searchResults.map((movie) => {
+                            return <SearchResults setQuery={setQuery} key={movie.id} movie={movie} />
+                        })}
+                        </div>
+                    )}
             </div>
             <div className='header-buttons-container'>
                 <div className='theme-button-container'>
