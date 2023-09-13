@@ -1,24 +1,29 @@
 import './App.css'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import ThemeContextProvider from './context/ThemeContext'
+
+import ThemeContextProvider from './contexts/ThemeContext'
 import Header from './components/Header/Header'
-import Homepage from './pages/Homepage/Homepage'
+import Homepage from './pages/Homepage'
+import Footer from './components/Footer/Footer'
+import MovieDetails from './pages/MovieDetails'
 
 
 function App() {
-    const apiKey = import.meta.env.VITE_API_KEY
-    const baseUrl = import.meta.env.VITE_BASE_URL
-
 
   return (
-    <BrowserRouter>
-    <ThemeContextProvider>
-    <Header apiKey={apiKey} baseUrl={baseUrl} />
-    <Routes>
-      <Route path='/' element={<Homepage apiKey={apiKey} baseUrl={baseUrl} />} />
-    </Routes>
-    </ThemeContextProvider>
-    </BrowserRouter>
+    <> 
+      <BrowserRouter>
+        <ThemeContextProvider>
+        <Header />
+        <Routes>
+          <Route path='/' element={<Homepage />} />
+          <Route path={'/movieDetails/:movieId'} element={<MovieDetails />} />
+          <Route path={'*'} element={<Homepage />} />
+        </Routes>
+        <Footer />
+        </ThemeContextProvider>
+      </BrowserRouter>
+    </>
   )
 }
 

@@ -1,70 +1,63 @@
-import React, {useContext, useEffect, useState } from 'react'
-import { ThemeContext } from '../../context/ThemeContext'
-import { Link, useNavigate } from 'react-router-dom'
-import './Header.css'
-import { MdOutlineDarkMode, MdOutlineLightMode } from 'react-icons/md'
-import SearchResults from '../SearchResults/SearchResults'
+import React, { useState, useEffect, useContext } from 'react'
 import axios from 'axios'
+import { ThemeContext } from '../../contexts/ThemeContext'
+import { Link } from 'react-router-dom'
+import { MdOutlineDarkMode, MdOutlineLightMode } from 'react-icons/md'
+import SearchResultItem from '../SearchResultItem/SearchResultItem'
 
-function Header({baseUrl, apiKey}) {
-    const navigate = useNavigate()
-    const {darkMode, setDarkMode} = useContext(ThemeContext)
-    const [query, setQuery] = useState('')
-    const [searchResults, setSearchResults] = useState([])
+import './Header.css'
 
-    useEffect(()=>{
-        if(query.trim().length > 0){
-            axios.get(`${baseUrl}/search/movie?api_key=${apiKey}&query=${query}`)
-            .then(res=>{
-                setSearchResults(res.data.results)
-            })
-            .catch(err=>console.log(err))
+function Header() {
+  //https://api.themoviedb.org/3/search/movie
+
+  const {darkMode, setDarkMode} = useContext(ThemeContext)
+
+  const [query, setQuery] = useState('')
+  const [searchResults, setSearchResults] = useState([])
+
+  useEffect(()=>{
+    axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${import.meta.env.VITE_APP_API_KEY}&query=${query}`)
+    .then(res=>{
+      setSearchResults(res.data.results)
+    })
+    .catch(err=>console.log(err))
+  },[query])
+
+  const toggleMode = () =>{
+    setDarkMode(prevState=>!prevState)
+  }
+
+  const getUserQuery = (e) =>{
+    setQuery(e.target.value)
+  }
+
+  return (
+    <div className={`header-container ${!darkMode ? 'header-light' : ''}`}>
+      <Link to='/' className='logo'>CineTrail</Link>
+      <div className='search-container'>
+        <input
+          type='text'
+          className='search-input'
+          placeholder='Search movies...' 
+          onChange={getUserQuery}
+        />
+        {
+          query.trim() !== '' &&
+          <div className='search-results-container'>
+            {
+              searchResults.map(result=><SearchResultItem key={result.id} movie={result} setQuery={setQuery} />)
+            }
+          </div>
         }
-    },[query])
-
-    const handleTheme = () => {
-        const newDarkMode = !darkMode
-        setDarkMode(newDarkMode)
-        localStorage.setItem('darkMode', newDarkMode)
-    }
-
-    return (
-        <div className={darkMode?'header-container':'header-container header-light'}>
-            <Link className='logo' to='/'>CineTrail</Link>
-            <div className='search-container'>
-                <input 
-                    value={query} 
-                    onChange={(e)=>setQuery(e.target.value)} 
-                    type="text" 
-                    className={`search-input ${query && 'input-active'} ${!query && darkMode && query}`} 
-                    placeholder='Search movies...' />
-                    {query.trim() !== '' &&(
-                        <div className='search-results-container'>
-                        {searchResults.map((movie) => {
-                            return <SearchResults setQuery={setQuery} key={movie.id} movie={movie} />
-                        })}
-                        </div>
-                    )}
-            </div>
-            <div className='header-buttons-container'>
-                <div className='theme-button-container'>
-                    {
-                        darkMode
-                        ? <div className='theme-buttons'>
-                            <MdOutlineLightMode onClick={handleTheme} className='theme-icon' />
-                            <MdOutlineDarkMode className='theme-icon theme-icon-active' />
-                        </div>
-                        : <div className='theme-buttons'>
-                        <MdOutlineLightMode className='theme-icon theme-icon-active' />
-                        <MdOutlineDarkMode onClick={handleTheme} className='theme-icon' />
-                        </div>
-                    }
-                </div>
-                <div>
-                    <button className='create-account-btn'>Create an account</button>
-                </div>
-            </div>
+      </div>
+      <div className='header-buttons-container'>
+        <div className='theme-buttons'>
+        <MdOutlineLightMode className={`theme-icon ${!darkMode ? 'theme-icon-active' : ''}`} onClick={darkMode ? toggleMode : undefined} />
+        <MdOutlineDarkMode className={`theme-icon ${darkMode ? 'theme-icon-active' : ''}`} onClick={!darkMode ? toggleMode : undefined} /> 
         </div>
+      </div>
+      <button className='create-account-btn'>Create an Account</button>
+    </div>
   )
 }
 
