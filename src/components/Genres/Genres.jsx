@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 
-function Genres({genreIds}) {
+function Genres({genreIds, component}) {
 
   // console.log(genreIds)
   //https://api.themoviedb.org/3/genre/movie/list
@@ -18,8 +18,9 @@ function Genres({genreIds}) {
     <div className='genre-container'>
       <p>Genres:&nbsp;</p>
       {
-        genreIds &&
-        genreIds.map((id, index)=>{
+        component === 'details'
+        ? genreIds.map((item, index)=> <p key={item.id}>{item.name}{index === genreIds.length-1 ? ' ' : ','}&nbsp;</p>)
+        : genreIds.map((id, index)=>{
           for(let i = 0; i < genres.length; i++){
             if(genres[i].id === id){
               return <p key={genres[i]?.id}>{genres[i]?.name}{index === genreIds.length-1 ? ' ' : ','}&nbsp;</p>

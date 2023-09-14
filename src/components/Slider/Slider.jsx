@@ -51,17 +51,17 @@ function Slider() {
         <div className='slider-info'>
           <h1>{upcomingMovies[movieIndex]?.title}</h1>
           <p className='slider-description'>{upcomingMovies[movieIndex]?.overview.slice(0,130)}...</p>
-          <Genres genreIds={upcomingMovies[movieIndex]?.genre_ids} />
+          <Genres genreIds={upcomingMovies[movieIndex] ? upcomingMovies[movieIndex]?.genre_ids : []} />
           <p>Release Date: {upcomingMovies[movieIndex]?.release_date}</p>
           {upcomingMovies[movieIndex] && (
             <div className='rating'>
               <StarRatings
-              rating={upcomingMovies[movieIndex]?.vote_average/2}
-              starRatedColor="red"
-              numberOfStars={5}
-              name='rating'
-              starDimension='15px'
-              starSpacing='1px'
+                rating={upcomingMovies[movieIndex]?.vote_average/2}
+                starRatedColor="red"
+                numberOfStars={5}
+                name='rating'
+                starDimension='15px'
+                starSpacing='1px'
               />
             </div>
           )}
